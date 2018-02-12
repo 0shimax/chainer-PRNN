@@ -42,10 +42,10 @@ class EncDec(chainer.Chain):
 
     def __call__(self, xs):
         n_batch, n_times, dim_obs = xs.shape
-        for time_idx in [0, 1]:  # range(n_times):
+        for time_idx in range(n_times):
             x = xs[:, time_idx]
             # h = self.input_to_hidden(x)
-            hidden = self.encorder(x)
+            self.encorder(x)
             # print("hidden", hidden)
 
         self.set_decorder_init_state()
@@ -55,9 +55,12 @@ class EncDec(chainer.Chain):
         ys.append(out)
         self.loss = (xs[:, -1] - out)**2
 
-        chainer.report({'loss': self.loss}, self)
-
         if self.is_train:
             self.out = self.train(xs, ys)
         else:
             self.out = self.predict(xs, ys, out)
+
+        self.loss /= n_times
+        self.loss = F.sum(self.loss)/n_batch
+        chainer.report({'loss': self.loss}, self)
+        return self.loss

@@ -37,9 +37,9 @@ class PersistentMemory(link.Chain):
         # print("sim----", sim)
         n_batch, n_slot = sim.shape
         normed_hidden = F.reshape(F.batch_l2_norm_squared(hidden_state), (-1, 1))
-        sim = F.exp(F.log(sim) - F.log(1+F.tile(normed_hidden, (1, n_slot))))
+        sim = F.exp(F.log(1+sim) - F.log(1+F.tile(normed_hidden, (1, n_slot))))
         # sim /= F.tile(normed_hidden, (1, n_slot))  # (batch_size, slot_size)/(batch_size,)
-        sim = F.exp(F.log(sim) - F.log(1+F.tile(F.sum(DM*DM, axis=0), (n_batch, 1))))
+        sim = F.exp(F.log(1+sim) - F.log(1+F.tile(F.sum(DM*DM, axis=0), (n_batch, 1))))
         # sim /= F.tile(
         #     F.sum(DM*DM, axis=0), (n_batch, 1))  # (batch_size, slot_size)/(slot_size,)
         return F.softmax(sim)  # (batch_size, slot_size)
