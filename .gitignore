@@ -99,3 +99,9 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# tag
+.tag*
+
+# data
+*.csv
